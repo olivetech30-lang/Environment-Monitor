@@ -35,7 +35,7 @@ let connectionCheckInterval = null;
 // Configuration settings for ESP32 communication
 const CONFIG = {
     // Update the ESP32 IP address to match your device
-    esp32Endpoint: 'http://192.168.1.100',  // Change this to your ESP32's IP address
+    esp32Endpoint: 'http://192.168.18.230',  // Your ESP32-S3 IP address
     updateInterval: 1000,                   // Update data every 1 second
     connectionCheckInterval: 5000,          // Check connection every 5 seconds
     maxDataPoints: 60,                      // Keep last 60 points for real-time charts
