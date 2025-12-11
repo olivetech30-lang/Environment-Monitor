@@ -1,26 +1,23 @@
 <!DOCTYPE html>
 <!--
-    IoT Environmental Dashboard - Real-time Temperature & Humidity Monitor
+    IoT Environmental Dashboard - Vercel Backend Integration
+    Real-time Temperature & Humidity Monitoring
     
-    This is the main HTML file for the IoT dashboard frontend.
-    It displays real-time sensor data from ESP32-S3 with charts and visualizations.
+    This dashboard connects to the Vercel backend API instead of direct ESP32.
+    This enables remote access from anywhere in the world!
     
-    Features:
-    - Real-time temperature and humidity monitoring
-    - Historical data charts
-    - Responsive design with sidebar navigation
-    - Live data updates via HTTP API
+    Architecture: ESP32 → Vercel Backend → Vercel Frontend
     
     Author: IoT Dashboard Developer
     Date: 2024
-    Compatible with: ESP32-S3 Environmental Monitor Firmware
+    Compatible with: ESP32-S3 Environmental Monitor + Vercel Backend
 -->
 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IoT Environmental Dashboard</title>
+    <title>IoT Environmental Dashboard - Vercel Backend</title>
     
     <!-- External CSS and JS Libraries -->
     <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind CSS for responsive design -->
@@ -211,7 +208,7 @@
                     <!-- Connection status indicator -->
                     <div class="flex items-center">
                         <div id="connection-status" class="w-3 h-3 bg-green-500 rounded-full connection-indicator"></div>
-                        <span id="connection-text" class="ml-2 text-sm text-gray-600">ESP32-S3 Connected</span>
+                        <span id="connection-text" class="ml-2 text-sm text-gray-600">Vercel Backend Connected</span>
                     </div>
                     <!-- Last update timestamp -->
                     <div class="text-sm text-gray-500">
@@ -220,7 +217,7 @@
                 </div>
                 <!-- ESP32 Device ID -->
                 <div class="text-sm text-gray-500">
-                    Device ID: ESP32-S3-001
+                    Device: ESP32-S3-001
                 </div>
             </div>
 
@@ -331,13 +328,13 @@
                         <div class="flex items-center justify-between">
                             <span class="text-gray-600">Status</span>
                             <span id="system-status" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Normal
+                                Connected
                             </span>
                         </div>
                         <!-- Connection quality -->
                         <div class="flex items-center justify-between">
-                            <span class="text-gray-600">Connection</span>
-                            <span id="connection-quality" class="text-sm font-medium text-green-600">Excellent</span>
+                            <span class="text-gray-600">Backend</span>
+                            <span id="backend-status" class="text-sm font-medium text-green-600">Vercel</span>
                         </div>
                     </div>
                 </div>
@@ -399,10 +396,10 @@
     <!-- 
         JavaScript Section
         Contains all the dashboard functionality including:
-        - Real-time data fetching
+        - Real-time data fetching from Vercel backend
         - Chart management
         - UI interactions
-        - ESP32 communication
+        - ESP32 communication via backend proxy
     -->
     <script src="script.js"></script>
 </body>
