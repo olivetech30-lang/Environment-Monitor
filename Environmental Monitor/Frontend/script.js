@@ -15,7 +15,7 @@ let connectionCheckInterval = null;
 // Configuration settings for Vercel backend communication
 const CONFIG = {
     // UPDATE THIS TO YOUR VERCEL BACKEND URL!
-    backendEndpoint: 'https://environment-monitor-full.vercel.app',  // Your Vercel backend URL
+    backendEndpoint: 'https://environment-monitor-project.vercel.app',  // Your Vercel backend URL
     deviceId: 'ESP32-S3-001',
     updateInterval: 1000,                   // Update data every 1 second
     connectionCheckInterval: 5000,          // Check connection every 5 seconds
@@ -892,3 +892,4 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 console.log('=== IoT Dashboard JavaScript with Vercel Backend Loaded Successfully ===');
+
