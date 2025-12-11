@@ -1,23 +1,3 @@
-/*
- * IoT Environmental Dashboard JavaScript
- * Real-time Temperature & Humidity Monitoring
- * 
- * This script handles all dashboard functionality including:
- * - Real-time data fetching from ESP32-S3 via HTTP API
- * - Chart initialization and live updates
- * - UI interactions and responsive behavior
- * - Trend analysis and environmental insights
- * - Error handling and connection management
- * 
- * Author: IoT Dashboard Developer
- * Date: 2024
- * Compatible with: ESP32-S3 Environmental Monitor Firmware
- */
-
-// ========================================
-// GLOBAL VARIABLES AND CONFIGURATION
-// ========================================
-
 // Chart instances for real-time and historical data visualization
 let temperatureChart = null;
 let humidityChart = null;
@@ -32,10 +12,11 @@ let historicalData = [];
 let updateInterval = null;
 let connectionCheckInterval = null;
 
-// Configuration settings for ESP32 communication
+// Configuration settings for Vercel backend communication
 const CONFIG = {
-    // Update the ESP32 IP address to match your device
-    esp32Endpoint: 'http://192.168.18.230',  // Your ESP32-S3 IP address
+    // UPDATE THIS TO YOUR VERCEL BACKEND URL!
+    backendEndpoint: 'https://environment-monitor-full.vercel.app',  // Your Vercel backend URL
+    deviceId: 'ESP32-S3-001',
     updateInterval: 1000,                   // Update data every 1 second
     connectionCheckInterval: 5000,          // Check connection every 5 seconds
     maxDataPoints: 60,                      // Keep last 60 points for real-time charts
@@ -50,7 +31,8 @@ let connectionState = {
     isConnected: false,
     lastSuccessfulUpdate: 0,
     reconnectAttempts: 0,
-    connectionQuality: 'excellent' // excellent, good, poor, disconnected
+    connectionQuality: 'excellent', // excellent, good, poor, disconnected
+    backendUrl: CONFIG.backendEndpoint
 };
 
 // ========================================
@@ -62,7 +44,8 @@ let connectionState = {
  * Sets up charts, event listeners, and starts data updates
  */
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('=== IoT Dashboard Initializing ===');
+    console.log('=== IoT Dashboard with Vercel Backend Initializing ===');
+    console.log('Backend URL:', CONFIG.backendEndpoint);
     
     // Initialize all components
     initializeCharts();
@@ -318,10 +301,10 @@ function setupEventListeners() {
 
 /*
  * Start the main data update cycle
- * Fetches sensor data from ESP32 at regular intervals
+ * Fetches sensor data from Vercel backend at regular intervals
  */
 function startDataUpdates() {
-    console.log('Starting data updates...');
+    console.log('Starting data updates from Vercel backend...');
     
     // Initial data fetch
     fetchSensorData();
@@ -333,14 +316,16 @@ function startDataUpdates() {
 }
 
 /*
- * Fetch sensor data from ESP32-S3 via HTTP API
+ * Fetch sensor data from Vercel backend API
  * Handles both successful responses and error scenarios
  */
 async function fetchSensorData() {
     try {
-        console.log('Fetching sensor data from ESP32...');
+        console.log('Fetching sensor data from Vercel backend...');
         
-        const response = await fetch(`${CONFIG.esp32Endpoint}/data`, {
+        const apiUrl = `${CONFIG.backendEndpoint}/api/readings/${CONFIG.deviceId}`;
+        
+        const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -360,13 +345,13 @@ async function fetchSensorData() {
         // Update connection status
         updateConnectionStatus(true);
         
-        console.log('Sensor data fetched successfully:', data.current);
+        console.log('Sensor data fetched successfully from backend:', data.current);
         
     } catch (error) {
         console.error('Error fetching sensor data:', error);
         updateConnectionStatus(false);
         
-        // Generate simulated data for demonstration when ESP32 is not available
+        // Generate simulated data for demonstration when backend is not available
         if (connectionState.reconnectAttempts === 0) {
             console.log('Using simulated data for demonstration');
             const simulatedData = generateSimulatedData();
@@ -449,7 +434,8 @@ function generateSimulatedData() {
             total_readings: Math.floor(now / 1000),
             buffer_size: 1000,
             uptime_seconds: Math.floor(now / 1000),
-            wifi_connected: true
+            wifi_connected: true,
+            backend_url: CONFIG.backendEndpoint
         }
     };
 }
@@ -753,7 +739,7 @@ function updateHumidityLevel(humidity) {
 // ========================================
 
 /*
- * Start connection monitoring to ESP32
+ * Start connection monitoring to Vercel backend
  * Checks connection status periodically
  */
 function startConnectionMonitoring() {
@@ -763,11 +749,12 @@ function startConnectionMonitoring() {
 }
 
 /*
- * Check connection status to ESP32
+ * Check connection status to Vercel backend
  */
 async function checkConnectionStatus() {
     try {
-        const response = await fetch(`${CONFIG.esp32Endpoint}/health`, {
+        const healthUrl = `${CONFIG.backendEndpoint}/api/health`;
+        const response = await fetch(healthUrl, {
             method: 'GET',
             signal: AbortSignal.timeout(3000)
         });
@@ -796,12 +783,12 @@ function updateConnectionStatus(isConnected, healthData = null) {
         // Update connection indicator
         const statusElement = document.getElementById('connection-status');
         const textElement = document.getElementById('connection-text');
-        const qualityElement = document.getElementById('connection-quality');
+        const qualityElement = document.getElementById('backend-status');
         
         statusElement.className = 'w-3 h-3 bg-green-500 rounded-full connection-indicator';
-        textElement.textContent = 'ESP32-S3 Connected';
+        textElement.textContent = 'Vercel Backend Connected';
         textElement.className = 'ml-2 text-sm text-green-600';
-        qualityElement.textContent = 'Excellent';
+        qualityElement.textContent = 'Connected';
         qualityElement.className = 'text-sm font-medium text-green-600';
     } else {
         connectionState.reconnectAttempts++;
@@ -809,10 +796,10 @@ function updateConnectionStatus(isConnected, healthData = null) {
         // Update connection indicator
         const statusElement = document.getElementById('connection-status');
         const textElement = document.getElementById('connection-text');
-        const qualityElement = document.getElementById('connection-quality');
+        const qualityElement = document.getElementById('backend-status');
         
         statusElement.className = 'w-3 h-3 bg-red-500 rounded-full';
-        textElement.textContent = 'ESP32-S3 Disconnected';
+        textElement.textContent = 'Backend Disconnected';
         textElement.className = 'ml-2 text-sm text-red-600';
         qualityElement.textContent = 'Disconnected';
         qualityElement.className = 'text-sm font-medium text-red-600';
@@ -904,4 +891,4 @@ window.addEventListener('unhandledrejection', (event) => {
     // Could implement error reporting here
 });
 
-console.log('=== IoT Dashboard JavaScript Loaded Successfully ===');
+console.log('=== IoT Dashboard JavaScript with Vercel Backend Loaded Successfully ===');
